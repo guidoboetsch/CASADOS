@@ -12,3 +12,8 @@ body{border-top:4px solid #121212}
 .demo-grid>div:first-child{color:white}.demo .intro{color:#dedede}.demo em{color:#ff5966}
 .demo-card{border-top:4px solid var(--accent)}.eyebrow span{border-radius:0}.tabs button:focus-visible{outline-offset:-3px}
 @media(max-width:475px){.hero-art{min-height:320px}.hero{gap:2rem}.art-label{font-size:.63rem}}
+.wedding-pass{align-self:center}
+.wedding-pass h3{font-size:clamp(2.25rem,5vw,3.9rem);margin:.75rem 0 .45rem}
+.wedding-pass h3 i{color:var(--pink);font-weight:400}
+.wedding-pass time{color:var(--muted)}
+.ticket-entry{border-top:1px dashed var(--line);margin-top:1.4rem;padding-top:1.2rem}

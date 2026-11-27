@@ -4,4 +4,6 @@ Edición comercial con datos ficticios. El paquete web es `dist/`; la planilla y
 
 Prueba local del 27/11/2026: JavaScript válido y Chrome a 1440 y 390 px sin desborde ni errores de página. Se verificaron los recursos bajo `/CASADOS/`, el botón rojo, asistencia ficticia, mesa, regalos y la preparación y copia de una consulta.
 
-Después del despliegue: contrastar los archivos públicos con los de la versión revisada y repetir las pruebas de la demo desde la URL devuelta por Pages. Las pruebas no requieren cargar información personal ni habilitar servicios externos.
+Publicación verificada el 27/11/2026: [sitio público](https://guidoboetsch.github.io/CASADOS/), [ejecución exitosa de Pages](https://github.com/guidoboetsch/CASADOS/actions/runs/46058688636), versión `f604f89dff1775314dcc2af184e1296bb13fcf49`.
+
+La portada, la hoja de estilos y el JavaScript públicos coincidieron con los archivos locales (normalizando saltos de línea). Se repitieron las mismas pruebas en la URL pública en Chrome a 1440 y 390 px; ambas pasaron. La vista móvil fue emulada, no probada en un dispositivo físico. No se probaron pagos ni persistencia: la demo no los habilita.

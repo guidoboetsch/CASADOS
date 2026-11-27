@@ -1,27 +1,5 @@
 "use strict";
 const $ = id => document.getElementById(id);
-const tabs = [...document.querySelectorAll('[role="tab"]')];
-function activate(tab, focus=false){
-  for(const t of tabs){
-    const active=t===tab; t.setAttribute("aria-selected", String(active)); t.tabIndex=active?0:-1;
-    $(t.getAttribute("aria-controls")).hidden=!active;
-  }
-  if(focus)tab.focus();
-}
-tabs.forEach((tab,i)=>{
-  tab.addEventListener("click",()=>activate(tab));
-  tab.addEventListener("keydown",e=>{
-    const indexes={ArrowLeft:(i-1+tabs.length)%tabs.length,ArrowRight:(i+1)%tabs.length,Home:0,End:tabs.length-1};
-    if(Object.hasOwn(indexes,e.key)){e.preventDefault();activate(tabs[indexes[e.key]],true);}
-  });
-});
-$("rsvp").addEventListener("submit",e=>{
-  e.preventDefault();const choice=new FormData(e.currentTarget).get("respuesta");
-  $("rsvp-result").textContent=choice?"Respuesta de prueba: "+choice+". No se guardó.":"Elegí una respuesta.";
-});
-$("mesas").addEventListener("submit",e=>{
-  e.preventDefault();$("mesa-result").textContent=new FormData(e.currentTarget).get("invitado")||"Elegí un invitado de ejemplo.";
-});
 $("quote").addEventListener("submit",e=>{
   e.preventDefault();const data=new FormData(e.currentTarget), name=String(data.get("nombres")||"").trim();
   if(!name){e.currentTarget.elements.nombres.focus();return;}

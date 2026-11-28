@@ -54,6 +54,7 @@ background:#260e14 var(--cinema-photo,none) center/cover no-repeat;overflow:hidd
 .invitation[data-design="verbena"] .schedule li{border-bottom:2px solid var(--rule)}
 .invitation[data-design]:not([data-design="cine"]) .cover:has(.cover-image)>div{padding:1.25rem;max-width:min(100%,48rem);background:var(--paper);box-shadow:0 .3rem 2rem #0002}
 .invitation:not([data-design="cine"]) :focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.invitation .gift-list{padding:0;list-style:none;margin:1rem 0}.gift-list li{padding:.6rem 0;border-bottom:1px solid currentColor}.gift-list a{color:inherit;text-underline-offset:.22em}
 `;
   const sheet = document.createElement("style");
   sheet.id="invitation-style";

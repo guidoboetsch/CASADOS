@@ -1,5 +1,11 @@
 # Verificación de CASADOS
 
+## Revisión local · estudio del salón y servicios por evento
+
+En la versión de trabajo del 28/11/2026 se probó el recorrido desde el editor a la maqueta en Chrome a 1440 y 390 px. Movimiento en 3D con mouse y tacto emulado, coordenadas compartidas con la planta, restauración tras recargar, deshacer/rehacer, plazas, giro, salones iniciales, ajuste de medidas y referencia local. La edición en planta también se verificó con WebGL deshabilitado. Las pruebas del modelo cubren límites, numeración, proyecciones y borradores inválidos.
+
+Desde la portada se verificaron «Nosotros» y la preparación del enlace al redactor de correo, sin enviar mensajes. Se probaron los cuatro diseños, la lista propia de regalos con ideas añadidas sin duplicar y el ZIP con ruta personalizada. Se comprobó su integridad y se leyó el HTML extraído. No se habilitaron cobros, no se publicaron invitaciones de prueba y no se usó correspondencia real. Pendiente: prueba en un teléfono físico, un acuse con una nueva consulta real y verificación pública tras autorizar el despliegue.
+
 ## Fondo negro e invitación de Guido y María
 
 El 27/11/2026 se publicó `7c45e06cee18684f0ab92aad46099efd6a5d12aa` en [CASADOS](https://guidoboetsch.github.io/CASADOS/) ([ejecución de Pages](https://github.com/guidoboetsch/CASADOS/actions/runs/46062340385)).

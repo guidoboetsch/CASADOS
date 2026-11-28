@@ -1,6 +1,6 @@
 # KAZA Comercial
 
-Frontend comercial estático de webs para casamientos. La portada presenta la invitación pública de Guido y María mediante un enlace externo; no replica ni procesa datos del evento. El formulario comercial solo prepara un texto para copiar.
+Frontend comercial estático de webs para casamientos creado por Guido y María. La portada presenta su invitación pública mediante un enlace externo; no replica ni procesa datos del evento. La consulta prepara un texto para copiar o abrir en el correo del visitante; el sitio no envía ni almacena mensajes.
 
 Repositorio comercial: https://github.com/guidoboetsch/CASADOS
 
@@ -19,13 +19,27 @@ Mesas es opcional. El buscador usa coincidencia de nombre completo o código ind
 
 Foto de muestra de portada: [Auditorio del Perot Theatre](https://www.loc.gov/pictures/item/2014630215/), Carol M. Highsmith. The Lyda Hill Texas Collection of Photographs in Carol M. Highsmith's America Project, Library of Congress, Prints and Photographs Division (LC-DIG-highsm-26015). Está incluida localmente para permitir la descarga sin depender de un servidor de imágenes. Se puede reemplazar por una foto propia.
 
-Abrir `dist/index.html` en un navegador. Para comprobar el botón de copiar con un contexto seguro, servir `dist` por HTTP en localhost o usar HTTPS en GitHub Pages. No hay dependencias ni compilación.
+Abrir `dist/index.html` en un navegador. Para comprobar el botón de copiar con un contexto seguro, servir `dist` por HTTP en localhost o usar HTTPS en GitHub Pages. Los archivos publicados son estáticos; no se necesita instalar herramientas para probarlos.
+
+## Estudio del salón
+
+Desde el editor, **Abrir estudio del salón** lleva a `dist/salon/index.html`. Atrio central, Galería larga y Salón vacío son maquetas de muestra; no incluyen invitados. Planta y espacio 3D editan la misma distribución en metros (medidas orientativas, no un plano técnico). Se pueden mover las piezas con mouse o tacto, o mediante sus coordenadas. Hay órbita, zoom, encuadre, prevención de salidas del perímetro y aviso de superposición. Si no hay WebGL 2, la planta conserva los controles de edición.
+
+Una imagen opcional se centra sin deformarse en el plano 2D. No se sube ni se interpreta con IA. El borrador se guarda en una clave del navegador separada de la invitación; no hay sincronización con la lista de invitados. Deshacer/rehacer abarca las últimas 30 ediciones de la sesión.
+
+Pruebas del modelo: `node --test tests/salon.test.cjs`. La fuente del renderizador está en `tools/salon/scene.js`; solo para cambiarla, ejecutar `npm ci` y `npm run build` desde esa carpeta. El paquete y su licencia se sirven desde `dist/salon/`, sin CDN.
+
+## Enlaces por evento y regalos
+
+El enlace opcional del editor prepara un ZIP estático con `i/<nombre>/index.html`. No registra un dominio, no reserva el nombre ni publica. Antes de una publicación autorizada, verificar que la ruta esté libre y revisar el contenido y su privacidad, sobre todo si se exportaron mesas. Nunca sobreescribir otra invitación. El HTML común sigue disponible sin usar este flujo.
+
+Regalos admite una lista propia y enlaces opcionales por regalo. Los presets «Para la casa», «Luna de miel» y «Experiencias» suman ideas sin reemplazar regalos existentes. Son sugerencias editables, no una tienda, reserva de artículos ni un sistema de pagos.
 
 ## Publicación manual
 
 En el repositorio: **Settings → Pages → Build and deployment → Source → GitHub Actions**. En **Actions → Publicar KAZA Comercial → Run workflow**, seleccionar `main` y ejecutar únicamente con dirección explícita para esa versión. El flujo se inicia manualmente; un push no publica el sitio.
 
-Solo se publica `dist/`; README, ROADMAP, AGENTS y las verificaciones no forman parte del sitio. El historial comercial es independiente del hosting anterior. No hay dominio personalizado, contacto inventado, analítica, backend ni integraciones externas.
+Solo se publica `dist/`; README, ROADMAP, AGENTS y las verificaciones no forman parte del sitio. El historial comercial es independiente del hosting anterior. El canal comercial usa un alias de la casilla indicada por Guido; el acuse se gestiona fuera del sitio. No hay analítica, backend ni acceso a Gmail desde la web.
 
 Esperar la ejecución correcta y abrir la URL efectiva devuelta por el despliegue. Comprobar carga, estilos, presentación del casamiento, destino del enlace de invitación y consulta/copia en escritorio y móvil. Registrar versión, ejecución y URL efectiva en VALIDATION.md.
 

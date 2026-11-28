@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es-AR"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#111010"><meta name="robots" content="noindex">
+<title>Estudio del salón · KAZA</title><link rel="stylesheet" href="salon.css">
+<script defer src="model.js"></script><script defer src="maqueta.min.js"></script><script defer src="studio.js"></script>
+</head><body>
+<header class="mast"><a class="brand" href="../editor/index.html">KAZA<span>✦</span></a><span class="wordmark">ESTUDIO DE ESPACIOS</span><a class="back" href="../editor/index.html">← Volver al editor</a></header>
+<main><div class="intro"><div><p class="eyebrow">PLANIFICACIÓN &nbsp;/&nbsp; MESAS</p><h1>El salón<span>.</span></h1><p>Distribuí las mesas en planta o recorré la maqueta. Los cambios se reflejan en ambas vistas.</p></div>
+<div class="stats"><div><b id="num-tables">—</b><small>Mesas</small></div><div><b id="num-seats">—</b><small>Lugares</small></div></div></div>
+<div class="workspace"><section class="board" aria-label="Plano interactivo">
+  <div class="board-head"><div class="board-title"><span class="dot"></span><strong id="room-name">Salón</strong><small id="room-size"></small></div>
+  <div class="seg" role="group" aria-label="Vista del salón"><button id="view2" aria-pressed="false">Planta 2D</button><button id="view3" aria-pressed="true">Espacio 3D</button></div></div>
+  <div id="stage" tabindex="0" aria-label="Área de edición del salón" aria-describedby="gestures">
+    <canvas id="volume" aria-hidden="true"></canvas><canvas id="plan" hidden aria-hidden="true"></canvas><div id="labels" aria-hidden="true"></div>
+    <span id="drawing-caption" aria-hidden="true">FIG. 01 / AXONOMETRÍA</span>
+  </div>
+  <div class="camera-bar"><div class="cam-actions"><button id="zoom-out" aria-label="Alejar">−</button><button id="zoom-in" aria-label="Acercar">+</button><button id="left" aria-label="Orbitar a la izquierda">↶</button><button id="right" aria-label="Orbitar a la derecha">↷</button><button id="fit" title="Encuadrar (H)">Encuadrar</button></div>
+    <div class="history"><button id="undo" title="Deshacer (Ctrl o Cmd + Z)" disabled>Deshacer</button><button id="redo" disabled>Rehacer</button></div></div>
+  <p class="hint" id="gestures">Arrastrá un elemento para moverlo.</p>
+</section>
+<aside class="inspector" aria-label="Herramientas de distribución">
+  <div class="aside-head"><span class="eyebrow">MOBILIARIO</span><span class="saved" id="save-state" role="status">Borrador local</span></div>
+  <h2>Distribución</h2><div class="add-row"><label class="sr" for="new-type">Elemento nuevo</label><select id="new-type"><option value="round">Mesa circular</option><option value="rect">Mesa rectangular</option><option value="main">Mesa principal</option><option value="floor">Pista de baile</option><option value="dj">Cabina de DJ</option></select><button id="add" class="primary">+ Agregar</button></div>
+  <label for="selection">Elemento seleccionado</label><select id="selection"></select>
+  <p id="empty-help" class="muted">Elegí una mesa en la maqueta o en la lista para editarla.</p>
+  <div id="properties" hidden>
+    <label for="object-name">Nombre</label><input id="object-name" maxlength="52">
+    <div id="table-fields"><div class="pair"><label>Número<input id="number" type="number" min="1" max="999"></label><label>Lugares<input id="seats" type="number" min="2" max="16"></label></div>
+    <label>Forma<select id="shape"><option value="round">Circular</option><option value="rect">Rectangular</option></select></label></div>
+    <div class="pair" id="fixture-fields"><label>Ancho (m)<input id="obj-w" type="number" min=".65" max="6" step=".05"></label><label>Fondo (m)<input id="obj-d" type="number" min=".65" max="6" step=".05"></label></div>
+    <div class="pair"><label>X (m)<input id="pos-x" type="number" step=".01"></label><label>Z (m)<input id="pos-z" type="number" step=".01"></label></div>
+    <div class="edit-actions"><button id="turn">Girar 45° ↻</button><button class="danger" id="remove">Quitar</button></div><p id="overlap" class="note"></p>
+  </div>
+  <details id="room-settings"><summary>Salón y medidas</summary><label for="preset">Distribución inicial</label><select id="preset"><option value="atrio">Atrio central</option><option value="galeria">Galería larga</option><option value="libre">Salón vacío</option></select><button id="load-preset">Cargar distribución</button>
+    <div class="pair"><label>Ancho (m)<input id="room-w" type="number" min="10" max="32" step=".1"></label><label>Fondo (m)<input id="room-d" type="number" min="10" max="32" step=".1"></label></div><button id="resize">Aplicar medidas</button></details>
+  <details><summary>Plano 2D de referencia</summary><p class="muted">Cargá una imagen del plano como fondo de la planta. Ajustá las medidas y ubicá las mesas a mano. No se detectan paredes ni se sube la imagen.</p>
+    <label for="ref-file">Imagen JPG, PNG o WebP</label><input type="file" id="ref-file" accept="image/jpeg,image/png,image/webp"><button id="ref-remove" hidden>Quitar referencia</button></details>
+  <p id="notice" class="note" role="status"></p>
+</aside></div><footer><span>KAZA / ESTUDIO DEL SALÓN</span><span>Maqueta orientativa · guardada en este navegador</span></footer>
+</main><dialog id="confirm"><form method="dialog"><p class="eyebrow">ESTUDIO DEL SALÓN</p><h2 id="ask-title"></h2><p id="ask-text"></p><div><button value="cancel" autofocus>Cancelar</button><button class="primary" value="ok">Confirmar</button></div></form></dialog>
+<noscript>Activá JavaScript para distribuir las mesas.</noscript></body></html>

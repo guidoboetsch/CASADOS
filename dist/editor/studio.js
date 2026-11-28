@@ -5,7 +5,7 @@
     cover:{names:"Guido y María",mark:"G&M",date:"2026-11-21",photo:"",logo:""},
     day:{title:"El día",venue:"",address:"",dress:"",map:""},
     timeline:{title:"Así se vivirá esta noche.",items:"Ceremonia\nRecepción\nFiesta"},
-    confirm:{title:"¿Podés venir?",body:"Nos encantaría que nos acompañes. Avisanos si vas a poder venir.",url:""},
+    confirm:{title:"¿Podés venir?",body:"Nos encantaría que nos acompañes. Avisanos si vas a poder venir.",modo:"grupo",url:"",grupoUrl:""},
     gifts:{title:"Regalá un recuerdo.",body:"Lo más importante es compartir este día con vos.",url:"",items:""},
     social:{title:"Seguí la fiesta.",body:"Compartamos las fotos y los momentos de esta noche.",tag:"",url:""},
     seats:{title:"Buscá tu mesa.",rows:""},
@@ -18,7 +18,7 @@
     cover:[["names","Nombres"],["mark","Iniciales del logo"],["date","Fecha","date"],["photo","Foto principal","image"],["logo","Logo de la pareja","image"]],
     day:[["title","Título"],["venue","Salón o lugar"],["address","Dirección"],["dress","Dresscode"],["map","Enlace al mapa","url"]],
     timeline:[["title","Título"],["items","Momentos de la noche","area","Uno por línea. Para agregar un horario, escribí por ejemplo: 20:30 | Recepción."]],
-    confirm:[["title","Título"],["body","Mensaje","area"],["url","Enlace al formulario de asistencia","url","Usá el formulario de este evento. KAZA no recibe confirmaciones."]],
+    confirm:[["title","Título"],["body","Mensaje","area"],["url","Enlace al formulario externo","url","Se conserva el formulario que elijas para este evento."],["grupoUrl","Formulario de grupos de este evento","url","Pegá la dirección del formulario KAZA activado para esta pareja (terminada en /exec), no la planilla ni un código familiar. Sin conectar, la invitación no recibe respuestas."]],
     gifts:[["title","Título"],["body","Mensaje","area"],["items","Regalos de la pareja","area","Uno por línea. Podés escribir solo el nombre o usar: Nombre del regalo | https://…"],["url","Enlace a la lista de regalos","url"]],
     social:[["title","Título"],["body","Mensaje","area"],["tag","Usuario o hashtag"],["url","Enlace a las redes del evento","url","Podés usar Instagram u otra red."]],
     seats:[["title","Título"],["rows","Asignaciones de mesas","area","Un código o nombre por línea, seguido de | y su mesa. Ejemplo: INV-042 | Mesa 3. Usá códigos individuales si la lista no debe ser pública."]],
@@ -45,15 +45,18 @@
         const v=data.blocks[k]?.[prop];
         if(typeof v==="string"&&(!["photo","logo"].includes(prop)||!v||imageOK(v)))state.blocks[k][prop]=v;
       }
+      if(data.blocks.confirm?.modo!=="grupo")state.blocks.confirm.modo="externo"; // Conservar los enlaces de borradores anteriores.
       state.order=[...data.order];
       if(typeof data.slug==="string")state.slug=data.slug.slice(0,60);
       if(designs.some(d=>d.id===data.design))state.design=data.design;
     }
   } catch {loadWarning="No se pudo recuperar el borrador anterior."}
   let selected=state.order[0],dragged=null,saveTimer;
-  function save(){clearTimeout(saveTimer);try{localStorage.setItem(key,JSON.stringify(state));$("saved").textContent="Guardado en este navegador"}catch{$("saved").textContent="No se pudo guardar en este navegador. Descargá la invitación."}}
+  function save(){clearTimeout(saveTimer);saveTimer=null;try{localStorage.setItem(key,JSON.stringify(state));$("saved").textContent="Guardado en este navegador"}catch{$("saved").textContent="No se pudo guardar en este navegador. Descargá la invitación."}}
   function changed(){preview();$("saved").textContent="Guardando…";clearTimeout(saveTimer);saveTimer=setTimeout(save,300)}
   function safeUrl(value){try{const u=new URL(value);return /^https?:$/.test(u.protocol)&&!u.username&&!u.password?u.href:""}catch{return ""}}
+  function grupoUrl(value){try{const u=new URL(value);if(u.origin!=="https://script.google.com"||u.search||u.hash||u.username||u.password||!/^\/macros\/s\/[\w-]+\/exec$/.test(u.pathname))return "";u.searchParams.set("estilo",state.design);return u.href}catch{return ""}}
+  function campoActivo(k,p){return k!=="confirm" || (p!=="url"||state.blocks.confirm.modo==="externo") && (p!=="grupoUrl"||state.blocks.confirm.modo==="grupo");}
   function prettyDate(date){if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return "";const d=new Date(date+"T12:00:00Z");return Number.isNaN(+d)?"":new Intl.DateTimeFormat("es-AR",{day:"numeric",month:"long",year:"numeric",timeZone:"UTC"}).format(d)}
   function seatRows(){return state.blocks.seats.rows.split(/\r?\n/).filter(l=>l.trim()).map(l=>l.split("|").map(s=>s.trim()))}
   // This function also runs in the downloaded standalone page. Only exact matches are shown.
@@ -104,6 +107,13 @@
       input.name="query";input.required=true;input.autocomplete="off";label.append(input);button.type="submit";out.setAttribute("role","status");
       for(const [name,table] of rows){const row=el("span",name);row.dataset.table=table;data.content.append(row)}
       form.append(label,button,out,data);inner.append(form);
+    }else if(k==="confirm"&&b.modo==="grupo"){
+      if(b.body)inner.append(el("p",b.body,"copy"));
+      if(inEditor){
+        const prueba=el("a","Probar confirmación en grupo","invite-action");prueba.href="../rsvp/index.html?estilo="+state.design;prueba.target="_blank";prueba.rel="noopener noreferrer";inner.append(prueba);
+        inner.append(el("p",grupoUrl(b.grupoUrl)?"Acá se abre la prueba sin envíos. La invitación descargada abre el formulario del evento.":"Prueba con datos ficticios. Conectá el formulario de este evento para recibir respuestas.","hint"));
+      }else if(grupoUrl(b.grupoUrl))link(grupoUrl(b.grupoUrl),"Confirmar asistencia");
+      else inner.append(el("p","La confirmación todavía no está abierta.","hint"));
     }else{if(b.body)inner.append(el("p",b.body,"copy"));if(k==="social"&&b.tag)inner.append(el("p",b.tag));
       if(k==="gifts"&&b.items.trim()){
         const list=el("ul",undefined,"gift-list");for(const [name,url] of giftRows(b.items)){const row=el("li");
@@ -147,6 +157,11 @@
     finally{URL.revokeObjectURL(url)}
   }
   function fields(){const root=$("fields"),k=selected,b=state.blocks[k];root.replaceChildren();$("editing").textContent=labels[k];
+    if(k==="confirm"){
+      const label=el("label","Cómo se confirma"),sel=el("select");sel.id="modo-rsvp";label.htmlFor=sel.id;
+      sel.add(new Option("Formulario de KAZA · individual, pareja o familia","grupo"));sel.add(new Option("Mantener un formulario externo","externo"));sel.value=b.modo;
+      sel.onchange=()=>{b.modo=sel.value;changed();fields();$("modo-rsvp").focus()};root.append(label,sel);
+    }
     if(k==="gifts"){const box=el("div",undefined,"gift-presets"),label=el("label","Ideas para empezar"),select=el("select"),add=el("button","Sumar ideas a mi lista");
       select.id="gift-preset";label.htmlFor=select.id;Object.keys(ideas).forEach(name=>select.add(new Option(name)));
       add.type="button";add.onclick=()=>{const names=new Set(giftRows(b.items).map(([s])=>s.toLocaleLowerCase()));
@@ -154,6 +169,7 @@
       box.append(label,select,add);root.append(box);
     }
     for(const [prop,title,type,help] of schema[k]){
+      if(!campoActivo(k,prop))continue;
       const id="edit-"+prop,label=el("label",title),input=el(type==="area"?"textarea":type==="offset"?"select":"input");label.htmlFor=id;input.id=id;root.append(label,input);
       const record=k==="countdown"&&prop==="date"?state.blocks.cover:b;
       if(help){const note=el("small",help);note.id=id+"-help";input.setAttribute("aria-describedby",note.id);root.append(note)}
@@ -165,9 +181,9 @@
           input.add(new Option("UTC"+v+(v==="-03:00"?" · Argentina":""),v))}
       }else if(type&&type!=="area")input.type=type;
       if(type==="url")input.placeholder="https://…";input.value=record[prop];
-      input.oninput=()=>{record[prop]=input.value;changed();if(type==="url"){const counter=k==="attendance",ok=counter?live.source(input.value):safeUrl(input.value);
-        input.setCustomValidity(input.value&&!ok?(counter?"Ingresá la dirección HTTPS del total, no la planilla ni el formulario.":"Ingresá un enlace completo https:// o http://."):"");
-        if(!counter&&!input.validity.valid)input.reportValidity()}};
+      input.oninput=()=>{record[prop]=input.value;changed();if(type==="url"){const counter=k==="attendance",group=prop==="grupoUrl",ok=group?grupoUrl(input.value):counter?live.source(input.value):safeUrl(input.value);
+        input.setCustomValidity(input.value&&!ok?(group?"Usá el /exec del formulario de grupos de este evento.":counter?"Ingresá la dirección HTTPS del total, no la planilla ni el formulario.":"Ingresá un enlace completo https:// o http://."):"");
+        if(!group&&!counter&&!input.validity.valid)input.reportValidity()}};
     }
     if(k==="attendance"){
       const guide=el("details",undefined,"count-guide"),steps=el("ol");
@@ -191,7 +207,7 @@
     if(state.order.includes("attendance")&&verified?.url!==live.source(state.blocks.attendance.source)){
       select("attendance");const test=$("preview").querySelector(".attendance button");test.focus();alert("Antes de descargar, tocá «Probar conexión» en la vista previa. Así comprobamos que el enlace entrega solo el total.");return}
     if(giftRows(state.blocks.gifts.items).some(([name,url,...extra])=>!name||extra.length||(url!==undefined&&!safeUrl(url)))){select("gifts");$("edit-items").focus();alert("Revisá la lista: escribí el nombre del regalo y, si agregás |, un enlace completo.");return}
-    for(const k of state.order){for(const [p,,type] of schema[k])if(type==="url"&&state.blocks[k][p]&&!safeUrl(state.blocks[k][p])){select(k);$("edit-"+p).focus();alert("Revisá el enlace de "+labels[k]+".");return}}
+    for(const k of state.order){for(const [p,,type] of schema[k])if(campoActivo(k,p)&&type==="url"&&state.blocks[k][p]&&!(p==="grupoUrl"?grupoUrl:safeUrl)(state.blocks[k][p])){select(k);$("edit-"+p).focus();alert(p==="grupoUrl"?"Usá el enlace /exec del formulario de grupos, sin códigos ni datos de invitados.":"Revisá el enlace de "+labels[k]+".");return}}
     if(state.order.includes("seats")){const rows=seatRows();
       if(!rows.length||rows.some(r=>r.length!==2||!r.every(Boolean))){select("seats");$("edit-rows").focus();alert("Completá las asignaciones con el formato código o nombre | mesa, o quitá el bloque hasta tenerlas.");return}
       if(!window.confirm("La invitación descargada incluirá las asignaciones de mesas. Quien reciba el archivo podrá leer la lista completa. ¿Querés incluirla?"))return;

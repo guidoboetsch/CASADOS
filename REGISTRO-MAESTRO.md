@@ -8,6 +8,12 @@ Propuesta para la integración. La demo estática no guarda respuestas y no est�
 - Mesas y Transporte: catálogos de mesas y viajes con capacidad. La asignación se hace una sola vez, en Invitados. Solo los confirmados ocupan plazas. Renumerar una mesa no cambia su ID.
 - Resumen: totales y confirmados sin mesa. Cocina, capitanes y pasajeros usan vistas de la misma lista, no copias para completar por separado.
 
+### Inscripción individual, en pareja o en familia
+
+El [formulario de grupos](tools/rsvp/README.md) registra a cada asistente con su propio ID, el mismo grupo y su modalidad. Para alguien que va, «Menor» indica si tendrá menos de 18 años al día de la fiesta; «Edad al evento» es un entero de 0 a 17 solo para menores. **0 es un bebé de menos de un año, no un dato faltante**. La edad de adultos y ausentes queda vacía y no se pide fecha de nacimiento. Una ausencia de toda la invitación registra solamente a quien avisa, con asistencia «No».
+
+Para el salón, el organizador puede filtrar en su registro privado por **Asistencia = Sí** y **Menor = Sí** y consultar Nombre y Edad al evento. Si hace falta compartir el resultado, entregar solo las columnas autorizadas, nunca el archivo maestro ni los pases. Las edades no se incorporan a la invitación, el buscador de mesas ni el recuento público.
+
 ## Cómo conectarlo
 
 1. Probar con un evento ficticio. Los organizadores son los únicos con edición completa. El responsable del evento define quién ve datos personales o alimentarios. Un filtro de Sheets no es una barrera de privacidad.

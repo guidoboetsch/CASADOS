@@ -1,5 +1,11 @@
 # Verificación de CASADOS
 
+## Revisión local · grupos y edad de menores
+
+El 28/11/2026 se verificaron en Chrome a 390 y 1440 px el recorrido desde el editor a la muestra, la conservación de un formulario externo anterior y la invitación exportada en HTML y ZIP. En el paquete del evento, con el servicio de Google simulado y sin tráfico externo, se confirmó una familia de tres; se verificaron la edad obligatoria de cada menor, un bebé de 0 años, el límite de 17, los cupos, el cambio de menor a adulto y una ausencia sin edad. Se simuló un corte **después** de guardar y el reintento no duplicó a nadie. El registro ficticio conservó sus filas anteriores y el contador devolvió solo el total.
+
+Pruebas: `node --test tests/rsvp.test.cjs tests/event-live.test.cjs tests/salon.test.cjs` y `node tests/browser/rsvp.cjs` (Playwright y Chrome). No se usaron invitados reales, no se modificó una planilla ni se desplegó una aplicación. Para activar un evento queda probar su despliegue autorizado de Apps Script, el acceso anónimo con pase y la consulta desde un teléfono físico.
+
 ## Revisión local · cuenta regresiva y personas confirmadas
 
 El 28/11/2026 se probaron los dos bloques en el editor y en la invitación descargada, en Chrome a 390 y 1440 px. Un invitado en otro huso vio el mismo instante de inicio; se verificaron el último segundo, el día del evento y el mensaje posterior. El recuento leyó una fuente ficticia al abrir y cada minuto: aumentó, bajó, marcó un cero real y se recuperó de un corte sin mostrar datos personales. El HTML y el del ZIP coincidieron; quitar el bloque excluyó su fuente y un borrador anterior conservó sus seis bloques originales.

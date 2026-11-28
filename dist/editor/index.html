@@ -8,12 +8,14 @@
   <script defer src="../designs.js"></script>
 </head>
 <body>
-<header class="mast"><a class="brand" href="../index.html" aria-label="Volver a KAZA">KAZA<span>✦</span></a><span>ESTUDIO DE INVITACIONES</span></header>
+<header class="mast"><a class="brand" href="../index.html" aria-label="Volver a KAZA">KAZA<span>✦</span></a><span>ESTUDIO DE INVITACIONES</span><a class="salon-link" href="../salon/index.html">Abrir estudio del salón ↗</a></header>
 <main>
 <div class="heading"><div><p class="eyebrow">COLECCIÓN KAZA</p><h1>Diseñá tu invitación.</h1><p>Elegí el diseño y editá los bloques. Arrastralo o usá las flechas para cambiar el orden.</p></div><div class="tools"><span id="saved" role="status"></span><button id="download" class="primary" type="button">Descargar invitación</button></div></div>
   <div class="workspace">
     <aside aria-label="Herramientas de diseño">
       <section class="panel"><label for="design">Diseño de la invitación</label><select id="design"></select><small id="design-note"></small></section>
+      <details class="panel publish-options"><summary>Enlace personalizado</summary><label for="event-slug">Nombres en la dirección (opcional)</label><input id="event-slug" maxlength="60" placeholder="por-ejemplo-ana-y-luz" autocomplete="off" spellcheck="false">
+      <small id="url-preview" aria-live="polite"></small><button id="publish-zip" type="button" disabled>Descargar para publicar (.zip)</button><small>Prepara una carpeta con la invitación. La dirección no queda reservada ni activa hasta que KAZA revise y publique los archivos.</small></details>
       <section class="panel"><h2>Bloques</h2><ol id="blocks"></ol><button id="toggle-seats" type="button"></button></section>
       <section class="panel" aria-labelledby="editing"><p class="eyebrow">CONTENIDO</p><h2 id="editing"></h2><div id="fields"></div></section>
     </aside>
@@ -21,4 +23,4 @@
   </div>
   <button id="new-invite" type="button">Empezar otra invitación con este preset</button>
   <noscript>Activá JavaScript para editar la invitación.</noscript>
-</main><script defer src="studio.js"></script></body></html>
+</main><script defer src="publishing.js"></script><script defer src="studio.js"></script></body></html>

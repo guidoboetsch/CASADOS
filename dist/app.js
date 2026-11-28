@@ -5,6 +5,7 @@ $("quote").addEventListener("submit",e=>{
   if(!name){e.currentTarget.elements.nombres.focus();return;}
   const date=data.get("fecha"); const options=data.getAll("funcion");
   $("draft").value=["Hola, soy "+name+". Quiero consultar por una web de casamiento.","Fecha estimada: "+(date?date.split("-").reverse().join("/"):"por definir")+".","Me interesa: "+(options.length?options.join(", "):"conocer las opciones")+".","¿Me cuentan cómo trabajan y cuánto cuesta?"].join("\n");
+  $("email-draft").href="mailto:gboetsch93+kaza@gmail.com?subject=Consulta%20KAZA&body="+encodeURIComponent($("draft").value);
   $("quote-result").hidden=false;$("copy-status").textContent="";$("draft").focus();
 });
 $("copy").addEventListener("click",async()=>{

@@ -6,7 +6,7 @@
     day:{title:"El día",venue:"",address:"",dress:"",map:""},
     timeline:{title:"Así se vivirá esta noche.",items:"Ceremonia\nRecepción\nFiesta"},
     confirm:{title:"¿Podés venir?",body:"Nos encantaría que nos acompañes. Avisanos si vas a poder venir.",url:""},
-    gifts:{title:"Regalá un recuerdo.",body:"Lo más importante es compartir este día con vos.",url:""},
+    gifts:{title:"Regalá un recuerdo.",body:"Lo más importante es compartir este día con vos.",url:"",items:""},
     social:{title:"Seguí la fiesta.",body:"Compartamos las fotos y los momentos de esta noche.",tag:"",url:""},
     seats:{title:"Buscá tu mesa.",rows:""}
   };
@@ -16,7 +16,7 @@
     day:[["title","Título"],["venue","Salón o lugar"],["address","Dirección"],["dress","Dresscode"],["map","Enlace al mapa","url"]],
     timeline:[["title","Título"],["items","Momentos de la noche","area","Uno por línea. Para agregar un horario, escribí por ejemplo: 20:30 | Recepción."]],
     confirm:[["title","Título"],["body","Mensaje","area"],["url","Enlace al formulario de asistencia","url","Usá el formulario de este evento. KAZA no recibe confirmaciones."]],
-    gifts:[["title","Título"],["body","Mensaje","area"],["url","Enlace a la lista de regalos","url"]],
+    gifts:[["title","Título"],["body","Mensaje","area"],["items","Regalos de la pareja","area","Uno por línea. Podés escribir solo el nombre o usar: Nombre del regalo | https://…"],["url","Enlace a la lista de regalos","url"]],
     social:[["title","Título"],["body","Mensaje","area"],["tag","Usuario o hashtag"],["url","Enlace a las redes del evento","url","Podés usar Instagram u otra red."]],
     seats:[["title","Título"],["rows","Asignaciones de mesas","area","Un código o nombre por línea, seguido de | y su mesa. Ejemplo: INV-042 | Mesa 3. Usá códigos individuales si la lista no debe ser pública."]]
   };
@@ -24,7 +24,10 @@
   const $=id=>document.getElementById(id);
   const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n};
   const designs=window.KazaDesigns;
-  const state={design:"cine",order:[...initial],blocks:structuredClone(defaults)};
+  const publish=window.KazaPublish;
+  const ideas={"Para la casa":["Desayuno para dos","Una cena en casa","Nuestro rincón de café"],"Luna de miel":["Una noche de viaje","Un paseo de a dos","Una cena en el destino"],"Experiencias":["Entradas al cine","Una clase de cocina","Una escapada de fin de semana"]};
+  const giftRows=text=>text.split(/\r?\n/).filter(l=>l.trim()).map(l=>l.split("|").map(s=>s.trim()));
+  const state={design:"cine",slug:"",order:[...initial],blocks:structuredClone(defaults)};
   const imageOK = value=>/^data:image\/(jpeg|png|webp);base64,[a-z0-9+/=]+$/i.test(value);
   let loadWarning="";
   try {
@@ -36,6 +39,7 @@
         if(typeof v==="string"&&(!["photo","logo"].includes(prop)||!v||imageOK(v)))state.blocks[k][prop]=v;
       }
       state.order=[...data.order];
+      if(typeof data.slug==="string")state.slug=data.slug.slice(0,60);
       if(designs.some(d=>d.id===data.design))state.design=data.design;
     }
   } catch {loadWarning="No se pudo recuperar el borrador anterior."}
@@ -78,8 +82,13 @@
       for(const [name,table] of rows){const row=el("span",name);row.dataset.table=table;data.content.append(row)}
       form.append(label,button,out,data);inner.append(form);
     }else{if(b.body)inner.append(el("p",b.body,"copy"));if(k==="social"&&b.tag)inner.append(el("p",b.tag));
+      if(k==="gifts"&&b.items.trim()){
+        const list=el("ul",undefined,"gift-list");for(const [name,url] of giftRows(b.items)){const row=el("li");
+          if(safeUrl(url)){const a=el("a",name);a.href=safeUrl(url);a.rel="noopener noreferrer";a.target="_blank";row.append(a)}else row.textContent=name;
+          list.append(row)}inner.append(list);
+      }
       link(b.url,{confirm:"Confirmar asistencia",gifts:"Ver lista de regalos",social:"Ver las redes de la fiesta"}[k]);
-      if(inEditor&&!safeUrl(b.url))inner.append(el("p","Agregá el enlace en el editor para mostrar el botón.","hint"));
+      if(inEditor&&!safeUrl(b.url)&&!(k==="gifts"&&b.items.trim()))inner.append(el("p","Agregá el enlace en el editor para mostrar el botón.","hint"));
     }
     return s;
   }
@@ -111,6 +120,12 @@
     finally{URL.revokeObjectURL(url)}
   }
   function fields(){const root=$("fields"),k=selected,b=state.blocks[k];root.replaceChildren();$("editing").textContent=labels[k];
+    if(k==="gifts"){const box=el("div",undefined,"gift-presets"),label=el("label","Ideas para empezar"),select=el("select"),add=el("button","Sumar ideas a mi lista");
+      select.id="gift-preset";label.htmlFor=select.id;Object.keys(ideas).forEach(name=>select.add(new Option(name)));
+      add.type="button";add.onclick=()=>{const names=new Set(giftRows(b.items).map(([s])=>s.toLocaleLowerCase()));
+        const rows=ideas[select.value].filter(s=>!names.has(s.toLocaleLowerCase()));if(rows.length){b.items=[b.items.trim(),...rows].filter(Boolean).join("\n");$("edit-items").value=b.items;changed()}};
+      box.append(label,select,add);root.append(box);
+    }
     for(const [prop,title,type,help] of schema[k]){
       const id="edit-"+prop,label=el("label",title),input=el(type==="area"?"textarea":"input");label.htmlFor=id;input.id=id;root.append(label,input);
       if(help){const note=el("small",help);note.id=id+"-help";input.setAttribute("aria-describedby",note.id);root.append(note)}
@@ -121,7 +136,9 @@
     }
   }
   $("toggle-seats").onclick=()=>{const i=state.order.indexOf("seats");if(i<0)state.order.push("seats");else state.order.splice(i,1);changed();select(i<0?"seats":state.order[Math.min(i,state.order.length-1)])};
-  $("download").onclick=()=>{
+  function exportInvite(asZip){
+    if(asZip&&!publish.slugOK(state.slug))return;
+    if(giftRows(state.blocks.gifts.items).some(([name,url,...extra])=>!name||extra.length||(url!==undefined&&!safeUrl(url)))){select("gifts");$("edit-items").focus();alert("Revisá la lista: escribí el nombre del regalo y, si agregás |, un enlace completo.");return}
     for(const k of state.order){for(const [p,,type] of schema[k])if(type==="url"&&state.blocks[k][p]&&!safeUrl(state.blocks[k][p])){select(k);$("edit-"+p).focus();alert("Revisá el enlace de "+labels[k]+".");return}}
     if(state.order.includes("seats")){const rows=seatRows();
       if(!rows.length||rows.some(r=>r.length!==2||!r.every(Boolean))){select("seats");$("edit-rows").focus();alert("Completá las asignaciones con el formato código o nombre | mesa, o quitá el bloque hasta tenerlas.");return}
@@ -134,13 +151,19 @@
     const css=doc.createElement("style");css.textContent=":root{--cinema-photo:"+(stock||"none")+"}body{margin:0;background:#090909}"+$("invitation-style").textContent;doc.head.append(css);
     const main=el("main",undefined,"invitation");render(main,false);doc.body.append(main);
     if(state.order.includes("seats")){const script=doc.createElement("script");script.textContent="("+bindSearch.toString()+")(document);";doc.body.append(script)}
-    const url=URL.createObjectURL(new Blob(["<!doctype html>\n",doc.documentElement.outerHTML],{type:"text/html;charset=utf-8"}));
-    const a=el("a");a.href=url;a.download="invitacion.html";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
-  };
+    const html="<!doctype html>\n"+doc.documentElement.outerHTML;
+    const url=URL.createObjectURL(asZip?publish.zip(state.slug,html):new Blob([html],{type:"text/html;charset=utf-8"}));
+    const a=el("a");a.href=url;a.download=asZip?state.slug+".zip":"invitacion.html";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
+  }
+  $("download").onclick=()=>exportInvite(false);$("publish-zip").onclick=()=>exportInvite(true);
+  function slugNote(){const ok=publish.slugOK(state.slug);$("publish-zip").disabled=!ok;
+    $("url-preview").textContent=ok?"Dirección prevista: "+publish.url(state.slug):state.slug?"Usá entre 2 y 60 caracteres: minúsculas sin acentos, números y guiones entre palabras.":"Sin enlace elegido. La descarga HTML común sigue disponible."}
+  $("event-slug").value=state.slug;slugNote();
+  $("event-slug").oninput=e=>{state.slug=e.target.value;slugNote();changed()};
   window.addEventListener("pagehide",()=>{if(saveTimer)save()});
   $("new-invite").onclick=()=>{
     if(!window.confirm("¿Empezar otra invitación? Se reemplazará el borrador de este navegador. Descargá antes la invitación actual si querés conservarla."))return;
-    state.order=[...initial];state.blocks=structuredClone(defaults);changed();select("cover");save();
+    state.order=[...initial];state.blocks=structuredClone(defaults);state.slug="";$("event-slug").value="";slugNote();changed();select("cover");save();
   };
   const selector=$("design");
   designs.forEach(d=>selector.add(new Option(d.name,d.id)));

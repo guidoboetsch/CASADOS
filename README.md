@@ -17,6 +17,8 @@ La portada está pensada para parejas y enlaza a la invitación pública de Guid
 
 Mesas es opcional. El buscador usa coincidencia de nombre completo o código individual y avisa si hay homónimos. Si se exporta con este bloque, sus asignaciones son legibles en el archivo: se recomiendan códigos en lugar de nombres. Quitar el bloque excluye las asignaciones de la exportación.
 
+En **Bloques → Opcionales**, la cuenta regresiva usa la fecha de la portada, la hora y el huso del evento (Argentina por defecto). Funciona también sin conexión. El contador de confirmados es independiente y requiere un [recuento público agregado del evento](REGISTRO-MAESTRO.md#contador-p%C3%BAblico-de-confirmados). Se comprueba desde la vista previa antes de exportar. La invitación consulta el total al abrirse y luego cada minuto mientras está visible; sin conexión muestra que el dato no está disponible, no un cero inventado. Ambos bloques se pueden mover o quitar, y se incluyen tanto en el HTML como en el ZIP. No se alteran borradores ni invitaciones anteriores.
+
 Foto de muestra de portada: [Auditorio del Perot Theatre](https://www.loc.gov/pictures/item/2014630215/), Carol M. Highsmith. The Lyda Hill Texas Collection of Photographs in Carol M. Highsmith's America Project, Library of Congress, Prints and Photographs Division (LC-DIG-highsm-26015). Está incluida localmente para permitir la descarga sin depender de un servidor de imágenes. Se puede reemplazar por una foto propia.
 
 Abrir `dist/index.html` en un navegador. Para comprobar el botón de copiar con un contexto seguro, servir `dist` por HTTP en localhost o usar HTTPS en GitHub Pages. Los archivos publicados son estáticos; no se necesita instalar herramientas para probarlos.

@@ -9,7 +9,7 @@ Esta copia parte del rediseño comercial `47d8281`. No contiene el registro de i
 
 ## Revisar localmente
 
-Desde la portada, **Diseñar mi invitación** abre `dist/editor/index.html`. El preset inicial tiene portada, día, itinerario, confirmación, regalos y redes. Los bloques se ordenan por arrastre o con botones. El borrador se guarda en el navegador de ese dispositivo; descargarlo genera una invitación HTML sin dependencias del editor. No se publica ni se conecta automáticamente a una planilla. Cada pareja configura sus enlaces de confirmación, regalos y redes.
+La portada está pensada para parejas y enlaza a la invitación pública de Guido y María. El [editor](https://guidoboetsch.github.io/CASADOS/editor/) sigue disponible por enlace directo (`dist/editor/index.html` para revisarlo localmente), sin acceso desde la navegación comercial. No requiere contraseña. El preset inicial tiene portada, día, itinerario, confirmación, regalos y redes. Los bloques se ordenan por arrastre o con botones. El borrador se guarda en el navegador de ese dispositivo; descargarlo genera una invitación HTML sin dependencias del editor. No se publica ni se conecta automáticamente a una planilla. Cada pareja configura sus enlaces de confirmación, regalos y redes.
 
 Mesas es opcional. El buscador usa coincidencia de nombre completo o código individual y avisa si hay homónimos. Si se exporta con este bloque, sus asignaciones son legibles en el archivo: se recomiendan códigos en lugar de nombres. Quitar el bloque excluye las asignaciones de la exportación.
 

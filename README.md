@@ -9,6 +9,12 @@ Esta copia parte del rediseño comercial `47d8281`. No contiene el registro de i
 
 ## Revisar localmente
 
+Desde la portada, **Diseñar mi invitación** abre `dist/editor/index.html`. El preset inicial tiene portada, día, itinerario, confirmación, regalos y redes. Los bloques se ordenan por arrastre o con botones. El borrador se guarda en el navegador de ese dispositivo; descargarlo genera una invitación HTML sin dependencias del editor. No se publica ni se conecta automáticamente a una planilla. Cada pareja configura sus enlaces de confirmación, regalos y redes.
+
+Mesas es opcional. El buscador usa coincidencia de nombre completo o código individual y avisa si hay homónimos. Si se exporta con este bloque, sus asignaciones son legibles en el archivo: se recomiendan códigos en lugar de nombres. Quitar el bloque excluye las asignaciones de la exportación.
+
+Foto de muestra de portada: [Auditorio del Perot Theatre](https://www.loc.gov/pictures/item/2014630215/), Carol M. Highsmith. The Lyda Hill Texas Collection of Photographs in Carol M. Highsmith's America Project, Library of Congress, Prints and Photographs Division (LC-DIG-highsm-26015). Está incluida localmente para permitir la descarga sin depender de un servidor de imágenes. Se puede reemplazar por una foto propia.
+
 Abrir `dist/index.html` en un navegador. Para comprobar el botón de copiar con un contexto seguro, servir `dist` por HTTP en localhost o usar HTTPS en GitHub Pages. No hay dependencias ni compilación.
 
 ## Publicación manual

@@ -1,5 +1,11 @@
 # Verificación de CASADOS
 
+## Revisión local · cuenta regresiva y personas confirmadas
+
+El 28/11/2026 se probaron los dos bloques en el editor y en la invitación descargada, en Chrome a 390 y 1440 px. Un invitado en otro huso vio el mismo instante de inicio; se verificaron el último segundo, el día del evento y el mensaje posterior. El recuento leyó una fuente ficticia al abrir y cada minuto: aumentó, bajó, marcó un cero real y se recuperó de un corte sin mostrar datos personales. El HTML y el del ZIP coincidieron; quitar el bloque excluyó su fuente y un borrador anterior conservó sus seis bloques originales.
+
+Pasaron las diez pruebas de `node --test tests/event-live.test.cjs tests/salon.test.cjs`, incluida la lectura de identificadores únicos y rectificaciones con el servicio de Sheets simulado. La prueba de navegador reproducible es `node tests/browser/event-live.cjs` (requiere Playwright y Chrome). También pasaron las verificaciones anteriores de colección y salón. No se conectó un registro real, no se modificaron confirmaciones y no se desplegó la web ni el adaptador. Quedan para el alta de cada evento la prueba anónima desde su dominio con el registro autorizado y la revisión en un teléfono físico.
+
 ## Revisión local · estudio del salón y servicios por evento
 
 En la versión de trabajo del 28/11/2026 se probó el recorrido desde el editor a la maqueta en Chrome a 1440 y 390 px. Movimiento en 3D con mouse y tacto emulado, coordenadas compartidas con la planta, restauración tras recargar, deshacer/rehacer, plazas, giro, salones iniciales, ajuste de medidas y referencia local. La edición en planta también se verificó con WebGL deshabilitado. Las pruebas del modelo cubren límites, numeración, proyecciones y borradores inválidos.

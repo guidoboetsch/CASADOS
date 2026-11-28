@@ -55,6 +55,13 @@ background:#260e14 var(--cinema-photo,none) center/cover no-repeat;overflow:hidd
 .invitation[data-design]:not([data-design="cine"]) .cover:has(.cover-image)>div{padding:1.25rem;max-width:min(100%,48rem);background:var(--paper);box-shadow:0 .3rem 2rem #0002}
 .invitation:not([data-design="cine"]) :focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .invitation .gift-list{padding:0;list-style:none;margin:1rem 0}.gift-list li{padding:.6rem 0;border-bottom:1px solid currentColor}.gift-list a{color:inherit;text-underline-offset:.22em}
+.invitation .clock-values{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));max-width:32rem;border-block:1px solid currentColor;padding:.85rem 0;margin:.65rem 0}
+.invitation .clock-values[hidden]{display:none}.clock-values span{text-align:center;padding:.25rem .1rem}
+.clock-values span+span{border-inline-start:1px solid #8886}.clock-values strong,.tally-number{display:block;font:500 clamp(1.65rem,5.2vw,3.6rem)/1 Georgia,serif;font-variant-numeric:tabular-nums;letter-spacing:-.045em}
+.clock-values small{display:block;color:inherit;font:650 .72rem/1.5 system-ui;text-transform:uppercase;letter-spacing:.08em;margin-top:.35rem}
+.invitation .tally-figure{display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap;margin:.6rem 0}.invitation .tally-number{font-size:clamp(2.5rem,8vw,5.5rem);color:var(--accent,#ff7280)}
+.invitation .metric-foot{display:block;color:inherit;font:normal .87rem/1.45 system-ui;opacity:.85}.invitation .clock-message:not(:empty){font:italic 1.4rem Georgia,serif;margin:.5rem 0}
+.invitation[data-design="verbena"] :is(.clock-values strong,.tally-number){font-family:system-ui,sans-serif;font-weight:900}
 `;
   const sheet = document.createElement("style");
   sheet.id="invitation-style";

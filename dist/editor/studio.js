@@ -1,6 +1,6 @@
 "use strict";
 (() => {
-  const labels = {cover:"Portada",day:"El día",timeline:"Itinerario",confirm:"Confirmar",gifts:"Regalos",social:"Redes sociales",seats:"Buscá tu mesa"};
+  const labels = {cover:"Portada",day:"El día",timeline:"Itinerario",confirm:"Confirmar",gifts:"Regalos",social:"Redes sociales",seats:"Buscá tu mesa",countdown:"Cuenta regresiva",attendance:"Asistencia confirmada"};
   const defaults = {
     cover:{names:"Guido y María",mark:"G&M",date:"2026-11-21",photo:"",logo:""},
     day:{title:"El día",venue:"",address:"",dress:"",map:""},
@@ -8,9 +8,12 @@
     confirm:{title:"¿Podés venir?",body:"Nos encantaría que nos acompañes. Avisanos si vas a poder venir.",url:""},
     gifts:{title:"Regalá un recuerdo.",body:"Lo más importante es compartir este día con vos.",url:"",items:""},
     social:{title:"Seguí la fiesta.",body:"Compartamos las fotos y los momentos de esta noche.",tag:"",url:""},
-    seats:{title:"Buscá tu mesa.",rows:""}
+    seats:{title:"Buscá tu mesa.",rows:""},
+    countdown:{title:"Nuestro gran día.",time:"",offset:"-03:00"},
+    attendance:{title:"La fiesta toma forma.",source:""}
   };
-  const initial = Object.keys(labels).filter(k=>k!=="seats");
+  const initial = ["cover","day","timeline","confirm","gifts","social"];
+  const optional = {seats:"bloque de mesas",countdown:"cuenta regresiva",attendance:"contador de confirmados"};
   const schema = {
     cover:[["names","Nombres"],["mark","Iniciales del logo"],["date","Fecha","date"],["photo","Foto principal","image"],["logo","Logo de la pareja","image"]],
     day:[["title","Título"],["venue","Salón o lugar"],["address","Dirección"],["dress","Dresscode"],["map","Enlace al mapa","url"]],
@@ -18,13 +21,17 @@
     confirm:[["title","Título"],["body","Mensaje","area"],["url","Enlace al formulario de asistencia","url","Usá el formulario de este evento. KAZA no recibe confirmaciones."]],
     gifts:[["title","Título"],["body","Mensaje","area"],["items","Regalos de la pareja","area","Uno por línea. Podés escribir solo el nombre o usar: Nombre del regalo | https://…"],["url","Enlace a la lista de regalos","url"]],
     social:[["title","Título"],["body","Mensaje","area"],["tag","Usuario o hashtag"],["url","Enlace a las redes del evento","url","Podés usar Instagram u otra red."]],
-    seats:[["title","Título"],["rows","Asignaciones de mesas","area","Un código o nombre por línea, seguido de | y su mesa. Ejemplo: INV-042 | Mesa 3. Usá códigos individuales si la lista no debe ser pública."]]
+    seats:[["title","Título"],["rows","Asignaciones de mesas","area","Un código o nombre por línea, seguido de | y su mesa. Ejemplo: INV-042 | Mesa 3. Usá códigos individuales si la lista no debe ser pública."]],
+    countdown:[["title","Título"],["date","Fecha del casamiento","date","Es la misma fecha de la portada y del bloque El día."],["time","Hora de inicio","time","Si no indicás una hora, la cuenta termina a las 00:00 del día del casamiento."],["offset","Huso horario del salón","offset","Elegí el que corresponde en esa fecha. Para Argentina, UTC−03:00."]],
+    attendance:[["title","Título"],["source","Enlace público del recuento","url","Usá el enlace que entrega solo el total de este evento. No pegues un formulario, la planilla de invitados ni una clave. Cada persona confirmada cuenta una vez, incluidos los acompañantes."]]
   };
   const key="kaza:invitation-studio:v1";
   const $=id=>document.getElementById(id);
   const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n};
   const designs=window.KazaDesigns;
   const publish=window.KazaPublish;
+  const live=window.KazaEventLive();
+  let verified=null;
   const ideas={"Para la casa":["Desayuno para dos","Una cena en casa","Nuestro rincón de café"],"Luna de miel":["Una noche de viaje","Un paseo de a dos","Una cena en el destino"],"Experiencias":["Entradas al cine","Una clase de cocina","Una escapada de fin de semana"]};
   const giftRows=text=>text.split(/\r?\n/).filter(l=>l.trim()).map(l=>l.split("|").map(s=>s.trim()));
   const state={design:"cine",slug:"",order:[...initial],blocks:structuredClone(defaults)};
@@ -71,7 +78,23 @@
     }
     inner.append(el("p",labels[k],"kicker"),el("h2",b.title||labels[k]));
     const link=(url,label)=>{if(safeUrl(url)){const a=el("a",label,"invite-action");a.href=safeUrl(url);a.target="_blank";a.rel="noopener noreferrer";inner.append(a)}};
-    if(k==="day"){const dl=el("dl");for(const [label,value] of [["Fecha",prettyDate(state.blocks.cover.date)],["Lugar",b.venue],["Dirección",b.address],["Dresscode",b.dress]])if(value){const row=el("div");row.append(el("dt",label),el("dd",value));dl.append(row)}inner.append(dl);link(b.map,"Cómo llegar")}
+    if(k==="countdown"){
+      const date=state.blocks.cover.date, times=live.eventTimes(date,b.time,b.offset);
+      if(!times){inner.append(el("p","Elegí la fecha del casamiento para iniciar la cuenta.","hint"));return s}
+      const clock=el("div"),strip=el("div",undefined,"clock-values");clock.dataset.eventStart=times.start;clock.dataset.eventEnd=times.end;
+      strip.setAttribute("role","timer");strip.setAttribute("aria-live","off");strip.setAttribute("aria-label","Tiempo hasta el casamiento");strip.hidden=true;
+      for(const unit of ["días","horas","min","seg"]){const part=el("span");part.append(el("strong","—"),el("small",unit));strip.append(part)}
+      const target=el("time",prettyDate(date)+" · "+(b.time||"00:00")+" (UTC"+b.offset+")","metric-foot");
+      target.dateTime=date+"T"+(b.time||"00:00")+":00"+b.offset;
+      clock.append(strip,el("p",undefined,"clock-message"),target);inner.append(clock);
+    }else if(k==="attendance"){
+      const tally=el("div"),figure=el("p",undefined,"tally-figure");
+      tally.dataset.countSource=live.source(b.source);figure.append(el("strong","—","tally-number"),el("span","personas confirmadas","tally-unit"));
+      const note=el("p",inEditor?(tally.dataset.countSource?"Probá la conexión antes de descargar la invitación.":"Conectá el registro de este evento para ver el total."):"Consultando el total…","metric-foot tally-status");note.setAttribute("role","status");tally.append(figure,note);
+      if(inEditor&&verified?.url===tally.dataset.countSource){figure.firstChild.textContent=verified.n.toLocaleString("es-AR");figure.lastChild.textContent=verified.n===1?"persona confirmada":"personas confirmadas";note.textContent="Última comprobación: "+new Date(verified.at).toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"})+"."}
+      if(inEditor){const test=el("button","Probar conexión","invite-action");test.type="button";test.disabled=!tally.dataset.countSource;tally.append(test)}
+      inner.append(tally);
+    }else if(k==="day"){const dl=el("dl");for(const [label,value] of [["Fecha",prettyDate(state.blocks.cover.date)],["Lugar",b.venue],["Dirección",b.address],["Dresscode",b.dress]])if(value){const row=el("div");row.append(el("dt",label),el("dd",value));dl.append(row)}inner.append(dl);link(b.map,"Cómo llegar")}
     else if(k==="timeline"){const list=el("ol",undefined,"schedule");
       for(const line of b.items.split("\n").map(l=>l.trim()).filter(Boolean)){const li=el("li"),i=line.indexOf("|");if(i>0)li.append(el("strong",line.slice(0,i).trim()),el("span",line.slice(i+1).trim()));else li.append(el("span",line));list.append(li)}inner.append(list)}
     else if(k==="seats"){
@@ -93,7 +116,8 @@
     return s;
   }
   function render(root,inEditor){root.dataset.design=state.design;root.replaceChildren(...state.order.map(k=>section(k,inEditor)));bindSearch(root)}
-  function preview(){render($("preview"),true)}
+  let stopPreview=()=>{};
+  function preview(){stopPreview();render($("preview"),true);stopPreview=live.mount($("preview"),true,(url,n,at)=>{verified=n===null?null:{url,n,at}})}
   function focusBlock(){const frame=document.querySelector(".viewport"),block=$("preview").querySelector('[data-block="'+selected+'"]');
     frame.scrollTop+=block.getBoundingClientRect().top-frame.getBoundingClientRect().top}
   function select(k){selected=k;list();fields();focusBlock();$("blocks").querySelector('[data-key="'+k+'"] .choose').focus({preventScroll:true})}
@@ -110,7 +134,10 @@
       li.ondragover=e=>{if(dragged){e.preventDefault();li.classList.add("over")}};li.ondragleave=()=>li.classList.remove("over");
       li.ondrop=e=>{e.preventDefault();li.classList.remove("over");if(dragged)move(dragged,i);dragged=null};
       li.append(handle,name);for(const [arrow,step,verb] of [["↑",-1,"Subir"],["↓",1,"Bajar"]]){const button=el("button",arrow,"move");button.type="button";button.setAttribute("aria-label",verb+" "+labels[k]);button.disabled=i+step<0||i+step>=state.order.length;button.onclick=()=>move(k,i+step);li.append(button)}root.append(li);
-    });$("toggle-seats").textContent=state.order.includes("seats")?"Quitar bloque de mesas":"+ Agregar bloque de mesas";
+    });for(const [k,name] of Object.entries(optional)){
+      const enabled=state.order.includes(k),toggle=$("toggle-"+k);
+      toggle.textContent=(enabled?"Quitar ":"+ Agregar ")+name;
+    }
   }
   async function pickImage(file,prop){
     if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>16*1024*1024)throw Error("Elegí un JPG, PNG o WebP de hasta 16 MB.");
@@ -127,17 +154,42 @@
       box.append(label,select,add);root.append(box);
     }
     for(const [prop,title,type,help] of schema[k]){
-      const id="edit-"+prop,label=el("label",title),input=el(type==="area"?"textarea":"input");label.htmlFor=id;input.id=id;root.append(label,input);
+      const id="edit-"+prop,label=el("label",title),input=el(type==="area"?"textarea":type==="offset"?"select":"input");label.htmlFor=id;input.id=id;root.append(label,input);
+      const record=k==="countdown"&&prop==="date"?state.blocks.cover:b;
       if(help){const note=el("small",help);note.id=id+"-help";input.setAttribute("aria-describedby",note.id);root.append(note)}
       if(type==="image"){input.type="file";input.accept="image/jpeg,image/png,image/webp";input.onchange=async()=>{const f=input.files[0];if(!f)return;try{b[prop]=await pickImage(f,prop);changed();if(selected===k)fields()}catch(e){input.value="";$("saved").textContent=e.message||"No se pudo leer la imagen."}};
         if(b[prop]){const remove=el("button","Quitar "+title.toLowerCase());remove.onclick=()=>{b[prop]="";changed();fields()};root.append(remove)}continue}
-      if(type&&type!=="area")input.type=type;if(type==="url")input.placeholder="https://…";input.value=b[prop];
-      input.oninput=()=>{b[prop]=input.value;changed();if(type==="url"){input.setCustomValidity(input.value&&!safeUrl(input.value)?"Ingresá un enlace completo https:// o http://.":"");if(!input.validity.valid)input.reportValidity()}};
+      if(type==="offset"){
+        const offsets=[...Array.from({length:27},(_,i)=>(i-12)*60),-570,-210,210,270,330,345,390,525,570,630,765,825].sort((a,b)=>a-b);
+        for(const minutes of offsets){const n=Math.abs(minutes),v=(minutes<0?"-":"+")+String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0");
+          input.add(new Option("UTC"+v+(v==="-03:00"?" · Argentina":""),v))}
+      }else if(type&&type!=="area")input.type=type;
+      if(type==="url")input.placeholder="https://…";input.value=record[prop];
+      input.oninput=()=>{record[prop]=input.value;changed();if(type==="url"){const counter=k==="attendance",ok=counter?live.source(input.value):safeUrl(input.value);
+        input.setCustomValidity(input.value&&!ok?(counter?"Ingresá la dirección HTTPS del total, no la planilla ni el formulario.":"Ingresá un enlace completo https:// o http://."):"");
+        if(!counter&&!input.validity.valid)input.reportValidity()}};
+    }
+    if(k==="attendance"){
+      const guide=el("details",undefined,"count-guide"),steps=el("ol");
+      for(const step of ["Usá el registro donde se actualizan las confirmaciones de esta pareja. El titular y cada acompañante cuentan por separado.","Pedile a quien administra el formulario o la planilla un enlace de solo lectura que devuelva únicamente el total. La lista de invitados queda privada.","Pegá ese enlace arriba y tocá «Probar conexión» en la vista previa. Si todavía no tenés el enlace, podés quitar el bloque y agregarlo más adelante."])steps.append(el("li",step));
+      guide.append(el("summary","¿De dónde sale el número?"),steps);root.append(guide);
     }
   }
-  $("toggle-seats").onclick=()=>{const i=state.order.indexOf("seats");if(i<0)state.order.push("seats");else state.order.splice(i,1);changed();select(i<0?"seats":state.order[Math.min(i,state.order.length-1)])};
+  for(const k of Object.keys(optional))$("toggle-"+k).onclick=()=>{
+    const idx=state.order.indexOf(k),anchor={countdown:"cover",attendance:"confirm"}[k];
+    if(idx<0)state.order.splice(anchor?state.order.indexOf(anchor)+1:state.order.length,0,k);
+    else state.order.splice(idx,1);
+    changed();select(idx<0?k:state.order[Math.min(idx,state.order.length-1)]);
+  };
   function exportInvite(asZip){
     if(asZip&&!publish.slugOK(state.slug))return;
+    const c=state.blocks.countdown;
+    if(state.order.includes("countdown")&&!live.eventTimes(state.blocks.cover.date,c.time,c.offset)){
+      select("countdown");$("edit-date").focus();alert("Elegí una fecha válida para la cuenta regresiva.");return}
+    if(state.order.includes("attendance")&&!live.source(state.blocks.attendance.source)){
+      select("attendance");$("edit-source").focus();alert("Conectá un enlace HTTPS que publique solo el total de confirmados, o quitá el bloque hasta tenerlo.");return}
+    if(state.order.includes("attendance")&&verified?.url!==live.source(state.blocks.attendance.source)){
+      select("attendance");const test=$("preview").querySelector(".attendance button");test.focus();alert("Antes de descargar, tocá «Probar conexión» en la vista previa. Así comprobamos que el enlace entrega solo el total.");return}
     if(giftRows(state.blocks.gifts.items).some(([name,url,...extra])=>!name||extra.length||(url!==undefined&&!safeUrl(url)))){select("gifts");$("edit-items").focus();alert("Revisá la lista: escribí el nombre del regalo y, si agregás |, un enlace completo.");return}
     for(const k of state.order){for(const [p,,type] of schema[k])if(type==="url"&&state.blocks[k][p]&&!safeUrl(state.blocks[k][p])){select(k);$("edit-"+p).focus();alert("Revisá el enlace de "+labels[k]+".");return}}
     if(state.order.includes("seats")){const rows=seatRows();
@@ -151,6 +203,8 @@
     const css=doc.createElement("style");css.textContent=":root{--cinema-photo:"+(stock||"none")+"}body{margin:0;background:#090909}"+$("invitation-style").textContent;doc.head.append(css);
     const main=el("main",undefined,"invitation");render(main,false);doc.body.append(main);
     if(state.order.includes("seats")){const script=doc.createElement("script");script.textContent="("+bindSearch.toString()+")(document);";doc.body.append(script)}
+    if(state.order.includes("countdown")||state.order.includes("attendance")){const script=doc.createElement("script");
+      script.textContent="("+window.KazaEventLive.toString()+")().mount(document);";doc.body.append(script)}
     const html="<!doctype html>\n"+doc.documentElement.outerHTML;
     const url=URL.createObjectURL(asZip?publish.zip(state.slug,html):new Blob([html],{type:"text/html;charset=utf-8"}));
     const a=el("a");a.href=url;a.download=asZip?state.slug+".zip":"invitacion.html";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
@@ -163,7 +217,7 @@
   window.addEventListener("pagehide",()=>{if(saveTimer)save()});
   $("new-invite").onclick=()=>{
     if(!window.confirm("¿Empezar otra invitación? Se reemplazará el borrador de este navegador. Descargá antes la invitación actual si querés conservarla."))return;
-    state.order=[...initial];state.blocks=structuredClone(defaults);state.slug="";$("event-slug").value="";slugNote();changed();select("cover");save();
+    state.order=[...initial];state.blocks=structuredClone(defaults);state.slug="";verified=null;$("event-slug").value="";slugNote();changed();select("cover");save();
   };
   const selector=$("design");
   designs.forEach(d=>selector.add(new Option(d.name,d.id)));

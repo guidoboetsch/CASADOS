@@ -16,11 +16,13 @@
       <section class="panel"><label for="design">Diseño de la invitación</label><select id="design"></select><small id="design-note"></small></section>
       <details class="panel publish-options"><summary>Enlace personalizado</summary><label for="event-slug">Nombres en la dirección (opcional)</label><input id="event-slug" maxlength="60" placeholder="por-ejemplo-ana-y-luz" autocomplete="off" spellcheck="false">
       <small id="url-preview" aria-live="polite"></small><button id="publish-zip" type="button" disabled>Descargar para publicar (.zip)</button><small>Prepara una carpeta con la invitación. La dirección no queda reservada ni activa hasta que KAZA revise y publique los archivos.</small></details>
-      <section class="panel"><h2>Bloques</h2><ol id="blocks"></ol><button id="toggle-seats" type="button"></button></section>
+      <section class="panel"><h2>Bloques</h2><ol id="blocks"></ol>
+        <p class="eyebrow">OPCIONALES</p><div class="optional-blocks"><button id="toggle-countdown" type="button"></button><button id="toggle-attendance" type="button"></button><button id="toggle-seats" type="button"></button></div>
+      </section>
       <section class="panel" aria-labelledby="editing"><p class="eyebrow">CONTENIDO</p><h2 id="editing"></h2><div id="fields"></div></section>
     </aside>
     <section class="canvas" aria-labelledby="preview-label"><div class="canvas-bar"><h2 id="preview-label">Vista previa</h2><span>INVITACIÓN</span></div><div class="viewport" tabindex="0" aria-label="Recorrer la invitación"><div class="invitation" id="preview"></div></div></section>
   </div>
   <button id="new-invite" type="button">Empezar otra invitación con este preset</button>
   <noscript>Activá JavaScript para editar la invitación.</noscript>
-</main><script defer src="publishing.js"></script><script defer src="studio.js"></script></body></html>
+</main><script defer src="publishing.js"></script><script defer src="event-live.js"></script><script defer src="studio.js"></script></body></html>

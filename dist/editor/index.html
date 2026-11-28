@@ -5,33 +5,15 @@
   <title>Estudio de invitaciones · KAZA</title>
   <link rel="stylesheet" href="studio.css">
   <link rel="stylesheet" href="cover-photo.css">
-  <style id="invitation-style">
-    .invitation{background:#090909;color:#faf8f4;font:1rem/1.55 system-ui,sans-serif;overflow-wrap:anywhere;color-scheme:dark}
-    .invitation *{box-sizing:border-box}.invitation h1,.invitation h2,.invitation p{margin:0}
-    .invite-section{padding:clamp(1.4rem,5%,4rem);border-bottom:1px solid #353535}.invite-section>*{max-width:48rem;margin-inline:auto}
-    .invite-section .kicker,.cover .kicker{font:750 .78rem/1.4 system-ui,sans-serif;text-transform:uppercase;letter-spacing:.18em}
-    .invite-section h2{font:italic clamp(2rem,5vw,3.8rem)/1.1 Georgia,serif;margin:.6rem 0 1rem}
-    .invite-section .copy{white-space:pre-line}.invite-section dl{margin:0}.invite-section dl>div,.schedule li{display:flex;flex-wrap:wrap;gap:.5rem 1.3rem;align-items:baseline;justify-content:space-between;padding:.7rem 0;border-bottom:1px solid #8886}
-    .invite-section dd{margin:0}.invite-section dt,.schedule strong{font-weight:750}.schedule{padding:0;list-style:none;margin:0}
-    .invite-section.day,.invite-section.confirm{background:#faf8f4;color:#171717}.invite-section.social{background:#290f14}
-    .invitation .invite-action{display:inline-block;background:#c31325;color:white;text-decoration:none;font:700 1rem system-ui,sans-serif;border:0;cursor:pointer;padding:.85rem 1.2rem;margin-top:1rem}
-    .invitation :focus-visible{outline:3px solid #f86673;outline-offset:3px}
-    .cover{position:relative;isolation:isolate;display:grid;place-content:center;text-align:center;min-height:26rem;color:white;
-      background:#260e14 var(--cinema-photo,none) center/cover no-repeat;overflow:hidden}
-    .cover::after{content:"";z-index:-1;position:absolute;inset:0;background:linear-gradient(0deg,#050505ce,#0803038f 55%,#0008)}
-    .cover .cover-image{position:absolute;z-index:-2;inset:0;width:100%;max-width:none;height:100%;object-fit:cover}
-    .cover .mark{font:italic 2rem Georgia,serif;letter-spacing:-.09em}.cover .image-mark{width:min(11rem,65%);max-height:6rem;object-fit:contain;margin:auto}
-    .cover h1{font:normal clamp(2.6rem,7vw,5.5rem)/1.02 Georgia,serif;letter-spacing:-.045em;margin:.7rem 0}.cover time{font-weight:650;letter-spacing:.12em}
-    .table-search label{display:block;margin:1rem 0 .25rem}.table-search input{display:block;width:min(100%,24rem);border:1px solid #777;background:#171717;color:white;padding:.85rem;font:inherit}
-    .table-search [role=status]{margin-top:.8rem}.invitation .hint{font-size:.92rem;color:inherit;opacity:.8;margin-top:1rem}
-  </style>
+  <script defer src="../designs.js"></script>
 </head>
 <body>
 <header class="mast"><a class="brand" href="../index.html" aria-label="Volver a KAZA">KAZA<span>✦</span></a><span>ESTUDIO DE INVITACIONES</span></header>
 <main>
-  <div class="heading"><div><p class="eyebrow">PLANTILLA · GUIDO Y MARÍA</p><h1>Diseñá tu invitación.</h1><p>Elegí un bloque para editarlo. Arrastralo o usá las flechas para cambiar el orden.</p></div><div class="tools"><span id="saved" role="status"></span><button id="download" class="primary" type="button">Descargar invitación</button></div></div>
+<div class="heading"><div><p class="eyebrow">COLECCIÓN KAZA</p><h1>Diseñá tu invitación.</h1><p>Elegí el diseño y editá los bloques. Arrastralo o usá las flechas para cambiar el orden.</p></div><div class="tools"><span id="saved" role="status"></span><button id="download" class="primary" type="button">Descargar invitación</button></div></div>
   <div class="workspace">
     <aside aria-label="Herramientas de diseño">
+      <section class="panel"><label for="design">Diseño de la invitación</label><select id="design"></select><small id="design-note"></small></section>
       <section class="panel"><h2>Bloques</h2><ol id="blocks"></ol><button id="toggle-seats" type="button"></button></section>
       <section class="panel" aria-labelledby="editing"><p class="eyebrow">CONTENIDO</p><h2 id="editing"></h2><div id="fields"></div></section>
     </aside>

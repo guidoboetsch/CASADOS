@@ -23,7 +23,8 @@
   const key="kaza:invitation-studio:v1";
   const $=id=>document.getElementById(id);
   const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n};
-  const state={order:[...initial],blocks:structuredClone(defaults)};
+  const designs=window.KazaDesigns;
+  const state={design:"cine",order:[...initial],blocks:structuredClone(defaults)};
   const imageOK = value=>/^data:image\/(jpeg|png|webp);base64,[a-z0-9+/=]+$/i.test(value);
   let loadWarning="";
   try {
@@ -35,6 +36,7 @@
         if(typeof v==="string"&&(!["photo","logo"].includes(prop)||!v||imageOK(v)))state.blocks[k][prop]=v;
       }
       state.order=[...data.order];
+      if(designs.some(d=>d.id===data.design))state.design=data.design;
     }
   } catch {loadWarning="No se pudo recuperar el borrador anterior."}
   let selected=state.order[0],dragged=null,saveTimer;
@@ -81,7 +83,7 @@
     }
     return s;
   }
-  function render(root,inEditor){root.replaceChildren(...state.order.map(k=>section(k,inEditor)));bindSearch(root)}
+  function render(root,inEditor){root.dataset.design=state.design;root.replaceChildren(...state.order.map(k=>section(k,inEditor)));bindSearch(root)}
   function preview(){render($("preview"),true)}
   function focusBlock(){const frame=document.querySelector(".viewport"),block=$("preview").querySelector('[data-block="'+selected+'"]');
     frame.scrollTop+=block.getBoundingClientRect().top-frame.getBoundingClientRect().top}
@@ -128,7 +130,7 @@
     save();const doc=document.implementation.createHTMLDocument(state.blocks.cover.names||"Nuestro casamiento");doc.documentElement.lang="es-AR";
     const charset=doc.createElement("meta");charset.setAttribute("charset","utf-8");doc.head.prepend(charset);
     const meta=doc.createElement("meta");meta.name="viewport";meta.content="width=device-width,initial-scale=1";doc.head.append(meta);
-    const stock=state.blocks.cover.photo?"none":getComputedStyle(document.documentElement).getPropertyValue("--cinema-photo");
+    const stock=state.blocks.cover.photo||state.design!=="cine"?"none":getComputedStyle(document.documentElement).getPropertyValue("--cinema-photo");
     const css=doc.createElement("style");css.textContent=":root{--cinema-photo:"+(stock||"none")+"}body{margin:0;background:#090909}"+$("invitation-style").textContent;doc.head.append(css);
     const main=el("main",undefined,"invitation");render(main,false);doc.body.append(main);
     if(state.order.includes("seats")){const script=doc.createElement("script");script.textContent="("+bindSearch.toString()+")(document);";doc.body.append(script)}
@@ -140,5 +142,10 @@
     if(!window.confirm("¿Empezar otra invitación? Se reemplazará el borrador de este navegador. Descargá antes la invitación actual si querés conservarla."))return;
     state.order=[...initial];state.blocks=structuredClone(defaults);changed();select("cover");save();
   };
-  list();fields();preview();$("saved").textContent=loadWarning||"Borrador en este navegador";
+  const selector=$("design");
+  designs.forEach(d=>selector.add(new Option(d.name,d.id)));
+  selector.value=state.design;
+  function designNote(){$("design-note").textContent=designs.find(d=>d.id===state.design).note}
+  selector.onchange=()=>{state.design=selector.value;designNote();changed()};
+  designNote();list();fields();preview();$("saved").textContent=loadWarning||"Borrador en este navegador";
 })();
